@@ -1,29 +1,42 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 
 export default function Nav() {
     const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isPending, setisPending] = useState(true);
     const [item, setItem] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:3000/poeple?id=1")
+        fetch("http://localhost:3000/poeple?id=2")
             .then((res) => res.json())
             .then(
                 (result) => {
-                    setIsLoaded(true);
+                    setisPending(false);
                     setItem(result);
                 },
                 (error) => {
-                    setIsLoaded(true);
+                    setisPending(true);
                     setError(error);
                 }
             );
     }, []);
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
-        return <div>Loading...</div>;
-    } else {
-        return item.map((i) => <img className='user-avatar' src={i.avatar} />);
-    }
+
+
+    return (
+        <div className='nav-wrapper'>
+            {error && <div>Error: {error.message}</div>}
+            {isPending && <div>Loading...</div>}
+            {item && (
+
+                item.map((i) => <img key={i.id} className='user-avatar' src={i.avatar} alt={i.name} />)
+            )}
+
+            <h3>Contacts</h3>
+            <div>
+                <Link to='/Create'>Add</Link>
+            </div>
+        </div>
+    );
+
 }
